@@ -1,0 +1,42 @@
+
+{
+    "variables": {
+        "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+        "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
+        "region":         "ap-south-1",
+        "baseimage":       "ami-02521d90e7410d9f0",
+        "efsid": "" 
+    },
+    "builders": [
+        {
+            "access_key": "{{user `aws_access_key`}}",
+            "ami_name": "wezvatech-jenkinsmaster-{{timestamp}}",
+            "instance_type": "t2.micro",
+            "region": "ap-south-1",
+            "secret_key": "{{user `aws_secret_key`}}",
+            "source_ami": "ami-02521d90e7410d9f0",
+            "ssh_username": "ubuntu",
+            "temporary_key_pair_type": "ed25519",
+            "type": "amazon-ebs",
+            "security_group_id": "sg-0a781bd43a7ce089e"
+        }
+    ],
+  "provisioners": [
+        {
+            "type": "file",
+            "source": "./jenkinsrole.tar",
+            "destination": "/home/ubuntu/"
+        },
+        {
+            "type": "file",
+            "source": "./setup.sh",
+            "destination": "/home/ubuntu/"
+        },
+        {
+            "type": "shell",
+            "inline": ["./setup.sh {{user `efsid`}}"]
+        }
+    ]
+
+}
+
